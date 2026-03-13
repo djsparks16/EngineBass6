@@ -1,1 +1,28 @@
+name: Build Blackside Bass
 
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone JUCE
+        run: git clone --depth 1 https://github.com/juce-framework/JUCE.git
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DJUCE_DIR=JUCE
+
+      - name: Build VST3 target
+        run: cmake --build build --config Release --target BlacksideBass_VST3
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlacksideBass-VST3
+          path: build/BlacksideBass_artefacts/Release/VST3
